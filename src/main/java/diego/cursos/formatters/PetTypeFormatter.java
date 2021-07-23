@@ -1,8 +1,8 @@
 package diego.cursos.formatters;
 
-import diego.cursos.fauxspring.Formatter;
-import diego.cursos.services.PetTypeService;
-import diego.cursos.model.PetType;
+import diego.cursos.JUnit5.fauxspring.Formatter;
+import diego.cursos.JUnit5.services.PetTypeService;
+import diego.cursos.JUnit5.model.PetType;
 
 import java.text.ParseException;
 import java.util.Collection;
