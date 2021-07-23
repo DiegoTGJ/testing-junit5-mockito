@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 
@@ -75,5 +76,18 @@ class SpecialitySDJpaServiceTest {
         service.delete(speciality);
 
         verify(specialtyRepository).delete(any(Speciality.class));
+    }
+
+    @Test
+    void findByIdBddTest() {
+        Speciality speciality = new Speciality();
+
+        given(specialtyRepository.findById(anyLong())).willReturn(Optional.of(speciality));
+
+        Speciality foundSpecialty = service.findById(2L);
+
+        assertNotNull(foundSpecialty);
+
+        verify(specialtyRepository).findById(anyLong());
     }
 }
