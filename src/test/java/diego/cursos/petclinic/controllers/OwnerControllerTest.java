@@ -6,9 +6,16 @@ import diego.cursos.petclinic.services.OwnerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -24,19 +31,31 @@ class OwnerControllerTest {
     @Mock
     BindingResult bindingResult;
 
+    @InjectMocks
     OwnerController ownerController;
 
-    Owner owner;
+    @Captor
+    ArgumentCaptor<String> stringArgumentCaptor;
+
+    Owner owner = new Owner(1L,"name","last name");;
 
     private static final String hasErrorReturn = "owners/createOrUpdateOwnerForm";
-    @BeforeEach
-    void setUp() {
-        ownerController = new OwnerController(ownerService);
-        owner = new Owner(1L,"name","last name");
-    }
 
     @Test
-    void testProcessCreationFormHasNoErrors() {
+    void processFindFormWildcardString() {
+        // given
+        List<Owner> ownerList = new ArrayList<>();
+        given(ownerService.findAllByLastNameLike(stringArgumentCaptor.capture())).willReturn(ownerList);
+        // when
+        String result = ownerController.processFindForm(owner,bindingResult,null);
+        //then
+        assertThat("%last name%").isEqualToIgnoringCase(stringArgumentCaptor.getValue());
+        assertThat("owners/findOwners").isEqualToIgnoringCase(result);
+    }
+
+
+    @Test
+    void testProcessCreationFormHasErrors() {
         // given
         given(bindingResult.hasErrors()).willReturn(true);
         // when
@@ -46,7 +65,7 @@ class OwnerControllerTest {
         assertEquals(hasErrorReturn, result);
     }
     @Test
-    void testProcessCreationFormHasErrors() {
+    void testProcessCreationFormHasNoErrors() {
         // given
         given(bindingResult.hasErrors()).willReturn(false);
         given(ownerService.save(any())).willReturn(owner);
